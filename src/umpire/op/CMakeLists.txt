@@ -152,3 +152,5 @@ target_include_directories(
 install(FILES
   ${umpire_op_headers}
   DESTINATION include/umpire/op)
+
+umpire_add_code_checks(PREFIX op)

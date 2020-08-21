@@ -11,12 +11,38 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 ### Added
 
 - Added ASAN memory sanitization to QuickPool
+
 - Added File Memory Allocator
+
+- Added alignment option to QuickPool and DynamicPoolList
+
+- GitHub "action" to check ABI compatibility against `main`
+
+- clang-format file, and CMake infrastructure for styling code
+
+- Added [CLI11](https://github.com/CLIUtils/CLI11) command line parser as a
+  built-in third party library.
+
+- Added option to replay to skip replaying of umpire operations
 
 ### Changed
 
+- API signature of QuickPool, DynamicPoolList, and DynamicPoolMap are
+  now identical to one another.
+
+- Quickpool and DynamicPoolMap now both allocate initial pool block
+  lazily like DynamicPoolList.
+
 - GitLab CI pipelines now generate the host-config files on-the-fly.
+
+- GitLab CI pipeline can now trigger pipeline in CHAI with develop version of
+  Umpire.
+
 - Bump BLT to v0.3.6
+
+- Applied clang-format to all sources
+
+- Minor updates to fix PGI compiler warnings.
 
 ### Removed
 
@@ -25,6 +51,10 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
   from the AllocationTracker/Inspector
 
 - Final remnants of unused ENABLE_COPY_HEADERS option removed.
+
+- Removed the third party library
+  [cxxopts](https://github.com/jarro2783/cxxopts) command line parser as it
+  has been replaced by [CLI11](https://github.com/CLIUtils/CLI11).
 
 ### Fixed
 
@@ -37,6 +67,9 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 - When installing, camp target was not exported.
 
+- Fixed memory leak in DynamicPoolList, QuickPool, and ThreadSafeAllocator 
+  tests + replay.
+
 ## [3.0.0] - 2020-06-30
 
 ### Added
@@ -44,7 +77,7 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 - Add support for multiple CUDA devices. These devices are detected and
   registered as "DEVICE_N", where N is the device number.
 
-- Allocation backtrace may be enabled by building umpire with 
+- Allocation backtrace may be enabled by building umpire with
   -DENABLE_BACKTRACE
 
 - Umpire exceptions now include backtrace information in the exception string.
