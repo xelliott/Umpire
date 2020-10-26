@@ -58,7 +58,9 @@ class Umpire(CMakePackage, CudaPackage):
     git      = 'https://github.com/LLNL/Umpire.git'
 
     version('develop', branch='develop', submodules='True')
-    version('master', branch='main', submodules='True')
+    version('main', branch='main', submodules='True')
+    version('4.0.1', tag='v4.0.1', submodules='True')
+    version('4.0.0', tag='v4.0.0', submodules='True')
     version('3.0.0', tag='v3.0.0', submodules='True')
     version('2.1.0', tag='v2.1.0', submodules='True')
     version('2.0.0', tag='v2.0.0', submodules='True')
@@ -89,7 +91,8 @@ class Umpire(CMakePackage, CudaPackage):
     variant('openmp_target', default=False, description='Build with OpenMP 4.5 support')
     variant('deviceconst', default=False,
             description='Enables support for constant device memory')
-    variant('tests', default='basic', values=('none', 'basic', 'benchmarks'),
+    variant('examples', default=True, description='Build Umpire Examples')
+    variant('tests', default='none', values=('none', 'basic', 'benchmarks'),
             multi=False, description='Tests to run')
 
     variant('libcpp', default=False, description='Uses libc++ instead of libstdc++')
@@ -342,6 +345,9 @@ class Umpire(CMakePackage, CudaPackage):
             if ('%xl' in spec):
                 cfg.write(cmake_cache_entry("OpenMP_CXX_FLAGS", "-qsmp;-qoffload"))
 
+        cfg.write(cmake_cache_option("BUILD_SHARED_LIBS", '+shared' in spec))
+
+        cfg.write(cmake_cache_option("ENABLE_EXAMPLES", '+examples' in spec))
         cfg.write(cmake_cache_option("ENABLE_BENCHMARKS", 'tests=benchmarks' in spec))
         cfg.write(cmake_cache_option("ENABLE_TESTS", not 'tests=none' in spec))
 
