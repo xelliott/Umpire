@@ -126,11 +126,9 @@ class Umpire(CMakePackage, CudaPackage):
         if '+libcpp' in spec:
             var='-'.join([var,'libcpp'])
 
-        host_config_path = "hc-%s-%s-%s%s-%s.cmake" % (socket.gethostname().rstrip('1234567890'),
+        host_config_path = "hc-%s-%s-%s.cmake" % (socket.gethostname().rstrip('1234567890'),
                                                self._get_sys_type(spec),
-                                               spec.compiler,
-                                               var,
-                                               spec.dag_hash())
+                                               spec.format('{name}-{version}-{compiler}-{hash:8}'))
         dest_dir = self.stage.source_path
         host_config_path = os.path.abspath(pjoin(dest_dir, host_config_path))
         return host_config_path
