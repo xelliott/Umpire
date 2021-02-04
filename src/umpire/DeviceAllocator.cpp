@@ -47,6 +47,7 @@ __host__ DeviceAllocator::~DeviceAllocator()
   }
 }
 
+#if defined(__CUDA_ARCH__) || (defined(__HIPCC__) && defined(__HIP_DEVICE_COMPILE__))
 __device__ void* DeviceAllocator::allocate(size_t size)
 {
   std::size_t counter = atomicAdd(m_counter, size);
@@ -55,5 +56,6 @@ __device__ void* DeviceAllocator::allocate(size_t size)
   }
   return static_cast<void*>(m_ptr + counter);
 }
+#endif
 
 } // end of namespace umpire
