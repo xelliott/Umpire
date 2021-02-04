@@ -50,20 +50,6 @@ if (ENABLE_FORTRAN OR ENABLE_C)
   endif ()
 endif ()
 
-if (ENABLE_CUDA)
-  set(umpire_headers
-    ${umpire_headers}
-    DeviceAllocator.hpp)
-
-  set(umpire_sources
-    ${umpire_sources}
-    DeviceAllocator.cpp)
-
-  set_source_files_properties(DeviceAllocator.cpp
-                              PROPERTIES
-                              LANGUAGE CUDA)
-endif()
-
 add_subdirectory(tpl)
 
 add_subdirectory(resource)
@@ -98,12 +84,47 @@ if (COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS)
     UMPIRE_WIN_STATIC_BUILD)
 endif ()
 
+if (ENABLE_CUDA)
+    set(umpire_headers
+            ${umpire_headers}
+            DeviceAllocator.hpp)
+
+    set(umpire_sources
+            ${umpire_sources}
+            DeviceAllocator.cpp)
+
+  if (NOT ENABLE_CLANG_CUDA)
+    set_source_files_properties(DeviceAllocator.cpp
+            PROPERTIES
+            LANGUAGE CUDA)
+  else()
+    set (_cuda_compile_flags -x cuda --cuda-gpu-arch=${BLT_CLANG_CUDA_ARCH} --cuda-path=${CUDA_TOOLKIT_ROOT_DIR})
+    set_source_files_properties(DeviceAllocator.cpp
+            PROPERTIES
+            COMPILE_OPTIONS "${_cuda_compile_flags}"
+            INCLUDE_DIRECTORIES ${CUDA_INCLUDE_DIRS}
+            )
+  endif()
+endif()
+
+if (ENABLE_CLANG_CUDA)
+blt_add_library(
+  NAME umpire
+  HEADERS ${umpire_headers} ${umpire_interface_headers} ${umpire_interface_c_fortran_headers}
+  SOURCES ${umpire_sources} ${umpire_interface_sources}
+  DEPENDS_ON ${umpire_depends} ${CUDA_LIBRARIES}
+  DEFINES ${umpire_defines})
+blt_add_target_link_flags(TO umpire
+  SCOPE PUBLIC
+  FLAGS ${CMAKE_CUDA_LINK_FLAGS})
+else()
 blt_add_library(
   NAME umpire
   HEADERS ${umpire_headers} ${umpire_interface_headers} ${umpire_interface_c_fortran_headers}
   SOURCES ${umpire_sources} ${umpire_interface_sources}
   DEPENDS_ON ${umpire_depends}
   DEFINES ${umpire_defines})
+endif()
 
 if (NOT WIN32 AND NOT ${CMAKE_VERSION} VERSION_LESS 3.18)
   target_link_options(
